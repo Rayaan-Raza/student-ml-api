@@ -46,16 +46,20 @@ jobs:
 
       - name: Build Docker image
         run: |
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
           docker build \
             --label org.opencontainers.image.version=${{ steps.version.outputs.version }} \
             --label org.opencontainers.image.revision=${{ github.sha }} \
             --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
-            -t ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }} \
-            -t ghcr.io/${{ github.repository }}:latest \
-            -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+            -t $IMAGE_NAME:${{ steps.version.outputs.version }} \
+            -t $IMAGE_NAME:latest \
+            -t $IMAGE_NAME:${{ github.sha }} .
 
       - name: Push Docker images
         run: |
-          docker push ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
-          docker push ghcr.io/${{ github.repository }}:latest
-          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+
+          docker push $IMAGE_NAME:${{ steps.version.outputs.version }}
+          docker push $IMAGE_NAME:latest
+          docker push $IMAGE_NAME:${{ github.sha }}
